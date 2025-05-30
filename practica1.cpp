@@ -1,45 +1,94 @@
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <algorithm>
+#include <fstream> 
+#include <string> 
+#include <algorithm> 
+#include <cctype> 
+#include <windows.h>
 
 using namespace std;
 
-bool buscarPalabra(const string& nombredeArchivo, const string& palabra) {
-    ifstream archivo(nombredeArchivo);
-    if (!archivo) {
-        cout << "El archivo " << nombredeArchivo << " no existe." << endl;
-        return false;
-    }
+void ChColor(int color) {
+SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
 
-    string contenido, linea;
-    while (getline(archivo, linea)) {
-        contenido += linea + " ";
-    }
-    string contenido_minuscula = contenido;
-    string palabra_minuscula = palabra;
-    transform(contenido_minuscula.begin(), contenido_minuscula.end(), contenido_minuscula.begin(), ::tolower);
-    transform(palabra_minuscula.begin(), palabra_minuscula.end(), palabra_minuscula.begin(), ::tolower);
+string Minus(const string& texto) {
+string textoMinus = texto;
+transform(textoMinus.begin(), textoMinus.end(), textoMinus.begin(), ::tolower);
+return textoMinus;
+}
 
-    if (contenido_minuscula.find(palabra_minuscula) != string::npos) {
-        cout << "La palabra '" << palabra << "' fue encontrada en el archivo." << endl;
-        return true;
-    } else {
-        cout << "La palabra '" << palabra << "' no fue encontrada en el archivo." << endl;
-        return false;
+
+void resaltar(string linea, const string& PBuscada) {
+string lineaMinus = Minus(linea);
+string palabraMinus = Minus(PBuscada);
+size_t posicion = lineaMinus.find(palabraMinus);
+
+while (posicion != string::npos) {
+cout << linea.substr(0, posicion);
+ChColor(10);
+cout << linea.substr(posicion, PBuscada.length());
+ChColor(7);
+linea = linea.substr(posicion + PBuscada.length());
+lineaMinus = lineaMinus.substr(posicion + PBuscada.length());
+posicion = lineaMinus.find(palabraMinus);
     }
+cout << linea << endl; 
 }
 
 int main() {
-    string nombredeArchivo, palabra;
-    nombredeArchivo = "C:/Users/migue/OneDrive/Desktop/programacion 2/el_quijote.txt";
 
-    cout << "Ingrese la palabra a buscar: ";
-    cin >> palabra;
-    cout << "Buscando la palabra " << palabra << " en el archivo " << nombredeArchivo << "..." << endl;
+SetConsoleOutputCP(65001); 
+SetConsoleCP(65001);
 
+string nombreArchivo = "C:/Users/migue/OneDrive/Desktop/programacion 2/el_quijote.txt";
+ifstream archivo(nombreArchivo);
 
-    buscarPalabra(nombredeArchivo, palabra);
+if (!archivo.is_open()) {
+cerr << "No se pudo abrir el archivo." << endl;
+return 1;
+    }
 
-    return 0;
+string linea;
+string PBuscada;
+char repetir;
+
+do {
+cout << "Ingrese la palabra para buscar: ";
+getline(cin, PBuscada);
+
+if (PBuscada.empty()) {
+cout << "ingrese una entrada" << endl;
+continue;
+}
+
+int CTotales = 0;
+archivo.clear();
+archivo.seekg(0);
+
+    
+while (getline(archivo, linea)) {
+string lineaMinus = Minus(linea);
+string palabraMinus = Minus(PBuscada);
+size_t posicion = lineaMinus.find(palabraMinus);
+
+if (posicion != string::npos) {
+resaltar(linea, PBuscada);
+size_t contador = 0;
+while (posicion != string::npos) {
+contador++;
+posicion = lineaMinus.find(palabraMinus, posicion + 1);
+}
+CTotales += contador;
+} else {
+cout << linea << endl;
+}}
+
+cout << "coincidencias para \"" << PBuscada << "\": " << CTotales << endl;
+cout << "¿Repetir la búsqueda? (S/N): ";
+cin >> repetir;
+cin.ignore();
+} while (repetir == 'S' || repetir == 's');
+
+archivo.close();
+return 0;
 }
