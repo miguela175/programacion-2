@@ -34,7 +34,7 @@ void limpiarPantalla() {
 
 // Funcion para mostrar el menu
 void mostrarMenu() {
-    cout << COLOR_NARANJA << "\n    Abraham Management Menu   \n\n" << RESET_COLOR;
+    cout << COLOR_NARANJA << "\n    Menu Miguel   \n\n" << RESET_COLOR;
     cout << "1. Agregar un nuevo producto\n";
     cout << "2. Mostrar todos los productos activos\n";
     cout << "3. Mostrar productos por categoria\n";
@@ -45,6 +45,7 @@ void mostrarMenu() {
     cout << "8. Guardar datos en archivo binario\n";
     cout << "9. Cargar datos desde archivo binario\n";
     cout << "10. Salir\n";
+    cout << "\n" << COLOR_NARANJA << "------------------------" << RESET_COLOR << endl;
     cout << "\nSeleccione una opcion: ";
 }
 
@@ -131,4 +132,165 @@ void buscarProductoPorCodigo() {
         }
     }
     cout << "Producto no encontrado.\n";
+}
+
+// Funcion para modificar un producto
+void modificarProducto() {
+    limpiarPantalla();
+    if (productos.empty()) {
+        cout << "No hay productos almacenados.\n";
+        return;
+    }
+    char codigo[10];
+    cout << "\nIngrese el codigo del producto a modificar: ";
+    cin.ignore();
+    cin.getline(codigo, 10);
+
+    for (size_t i = 0; i < productos.size(); i++) {
+        if (strcmp(productos[i].codigo, codigo) == 0 && productos[i].activo) {
+            cout << "\n--- Modificar Producto ---\n";
+            cout << "Nuevo Precio: ";
+            cin >> productos[i].precio;
+            cout << "Nuevo Stock: ";
+            cin >> productos[i].stock;
+            cout << "Nueva Categoria: ";
+            cin.ignore();
+            cin.getline(productos[i].categoria, 30);
+
+            cout << "Producto modificado con exito.\n";
+            return;
+        }
+    }
+    cout << "Producto no encontrado.\n";
+}
+
+// Funcion para eliminar un producto (borrado logico)
+void eliminarProducto() {
+    limpiarPantalla();
+    if (productos.empty()) {
+        cout << "No hay productos almacenados.\n";
+        return;
+    }
+    char codigo[10];
+    cout << "\nIngrese el codigo del producto a eliminar: ";
+    cin.ignore();
+    cin.getline(codigo, 10);
+
+    for (size_t i = 0; i < productos.size(); i++) {
+        if (strcmp(productos[i].codigo, codigo) == 0 && productos[i].activo) {
+            productos[i].activo = false;
+            cout << "Producto eliminado (borrado logico) con exito.\n";
+            return;
+        }
+    }
+    cout << "Producto no encontrado.\n";
+}
+
+// Funcion para recuperar un producto borrado (marcar como activo)
+void recuperarProducto() {
+    limpiarPantalla();
+    if (productos.empty()) {
+        cout << "No hay productos almacenados.\n";
+        return;
+    }
+    char codigo[10];
+    cout << "\nIngrese el codigo del producto a recuperar: ";
+    cin.ignore();
+    cin.getline(codigo, 10);
+
+    for (size_t i = 0; i < productos.size(); i++) {
+        if (strcmp(productos[i].codigo, codigo) == 0 && !productos[i].activo) {
+            productos[i].activo = true;
+            cout << "Producto recuperado con exito.\n";
+            return;
+        }
+    }
+    cout << "Producto no encontrado o ya está activo.\n";
+}
+
+// Funcion para guardar los datos en un archivo binario
+void guardarEnArchivo(const string& nombreArchivo) {
+    limpiarPantalla();
+    ofstream archivo(nombreArchivo, ios::binary);
+    if (!archivo) {
+        cerr << "Error al abrir el archivo para escritura.\n";
+        return;
+    }
+    size_t cantidad = productos.size();
+    archivo.write(reinterpret_cast<char*>(&cantidad), sizeof(cantidad));
+    archivo.write(reinterpret_cast<char*>(productos.data()), cantidad * sizeof(Producto));
+    archivo.close();
+    cout << "Datos guardados en " << nombreArchivo << " exitosamente.\n";
+}
+
+// Funcion para cargar los datos desde un archivo binario
+void cargarDesdeArchivo(const string& nombreArchivo) {
+    limpiarPantalla();
+    ifstream archivo(nombreArchivo, ios::binary);
+    if (!archivo) {
+        cerr << "Error al abrir el archivo para lectura.\n";
+        return;
+    }
+    size_t cantidad;
+    archivo.read(reinterpret_cast<char*>(&cantidad), sizeof(cantidad));
+
+    productos.resize(cantidad);
+    archivo.read(reinterpret_cast<char*>(productos.data()), cantidad * sizeof(Producto));
+
+    archivo.close();
+    cout << "Datos cargados desde " << nombreArchivo << " exitosamente.\n";
+}
+
+// Funcion principal
+int main() {
+    string nombreArchivo = "inventario.bin";
+    int opcion;
+
+    do {
+        limpiarPantalla();
+        mostrarMenu();
+        cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                agregarProducto();
+                break;
+            case 2:
+                mostrarProductosActivos();
+                break;
+            case 3:
+                mostrarProductosPorCategoria();
+                break;
+            case 4:
+                buscarProductoPorCodigo();
+                break;
+            case 5:
+                modificarProducto();
+                break;
+            case 6:
+                eliminarProducto();
+                break;
+            case 7:
+                recuperarProducto();
+                break;
+            case 8:
+                guardarEnArchivo(nombreArchivo);
+                break;
+            case 9:
+                cargarDesdeArchivo(nombreArchivo);
+                break;
+            case 10:
+                cout << "Saliendo del programa...\n";
+                break;
+            default:
+                cout << "Opcion no valida. Intente de nuevo.\n";
+        }
+        if (opcion != 10) {
+            cout << "\nPresione Enter para continuar...";
+            cin.ignore();
+            cin.get();
+        }
+    } while (opcion != 10);
+
+    return 0;
 }
