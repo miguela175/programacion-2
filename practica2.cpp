@@ -2,17 +2,13 @@
 #include <fstream>
 #include <vector>
 #include <cstring> // Para strcmp y strcpy
-#include <cstdlib> // Para system()
+#include <cstdlib>
 
 using namespace std;
 
-// Definir el código de color naranja
-#define COLOR_NARANJA "\033[38;5;208m"
-#define RESET_COLOR "\033[0m"
-
 // Estructura para representar un producto
 struct Producto {
-    char codigo[10]; // Codigo alfanumerico
+    char codigo[10];
     char nombre[30];
     float precio;
     int stock;
@@ -23,35 +19,9 @@ struct Producto {
 // Arreglo dinamico de productos
 vector<Producto> productos;
 
-// Funcion para limpiar la pantalla
-void limpiarPantalla() {
-    #ifdef _WIN32
-        system("cls"); // Para Windows
-    #else
-        system("clear"); // Para Unix/Linux/macOS
-    #endif
-}
-
-// Funcion para mostrar el menu
-void mostrarMenu() {
-    cout << COLOR_NARANJA << "\n    Menu Miguel   \n\n" << RESET_COLOR;
-    cout << "1. Agregar un nuevo producto\n";
-    cout << "2. Mostrar todos los productos activos\n";
-    cout << "3. Mostrar productos por categoria\n";
-    cout << "4. Buscar un producto por codigo\n";
-    cout << "5. Modificar un producto\n";
-    cout << "6. Eliminar un producto (borrado logico)\n";
-    cout << "7. Recuperar un producto borrado\n";
-    cout << "8. Guardar datos en archivo binario\n";
-    cout << "9. Cargar datos desde archivo binario\n";
-    cout << "10. Salir\n";
-    cout << "\n" << COLOR_NARANJA << "------------------------" << RESET_COLOR << endl;
-    cout << "\nSeleccione una opcion: ";
-}
 
 // Funcion para agregar un nuevo producto
 void agregarProducto() {
-    limpiarPantalla();
     Producto nuevo;
     cout << "\n--- Agregar Nuevo Producto ---\n";
     cout << "Codigo: ";
@@ -74,7 +44,6 @@ void agregarProducto() {
 
 // Funcion para mostrar todos los productos activos
 void mostrarProductosActivos() {
-    limpiarPantalla();
     if (productos.empty()) {
         cout << "No hay productos almacenados.\n";
         return;
@@ -91,7 +60,6 @@ void mostrarProductosActivos() {
 
 // Funcion para mostrar productos por categoria
 void mostrarProductosPorCategoria() {
-    limpiarPantalla();
     if (productos.empty()) {
         cout << "No hay productos almacenados.\n";
         return;
@@ -112,7 +80,6 @@ void mostrarProductosPorCategoria() {
 
 // Funcion para buscar un producto por codigo
 void buscarProductoPorCodigo() {
-    limpiarPantalla();
     if (productos.empty()) {
         cout << "No hay productos almacenados.\n";
         return;
@@ -136,7 +103,6 @@ void buscarProductoPorCodigo() {
 
 // Funcion para modificar un producto
 void modificarProducto() {
-    limpiarPantalla();
     if (productos.empty()) {
         cout << "No hay productos almacenados.\n";
         return;
@@ -166,7 +132,6 @@ void modificarProducto() {
 
 // Funcion para eliminar un producto (borrado logico)
 void eliminarProducto() {
-    limpiarPantalla();
     if (productos.empty()) {
         cout << "No hay productos almacenados.\n";
         return;
@@ -188,7 +153,6 @@ void eliminarProducto() {
 
 // Funcion para recuperar un producto borrado (marcar como activo)
 void recuperarProducto() {
-    limpiarPantalla();
     if (productos.empty()) {
         cout << "No hay productos almacenados.\n";
         return;
@@ -210,7 +174,7 @@ void recuperarProducto() {
 
 // Funcion para guardar los datos en un archivo binario
 void guardarEnArchivo(const string& nombreArchivo) {
-    limpiarPantalla();
+
     ofstream archivo(nombreArchivo, ios::binary);
     if (!archivo) {
         cerr << "Error al abrir el archivo para escritura.\n";
@@ -225,7 +189,6 @@ void guardarEnArchivo(const string& nombreArchivo) {
 
 // Funcion para cargar los datos desde un archivo binario
 void cargarDesdeArchivo(const string& nombreArchivo) {
-    limpiarPantalla();
     ifstream archivo(nombreArchivo, ios::binary);
     if (!archivo) {
         cerr << "Error al abrir el archivo para lectura.\n";
@@ -240,14 +203,26 @@ void cargarDesdeArchivo(const string& nombreArchivo) {
     archivo.close();
     cout << "Datos cargados desde " << nombreArchivo << " exitosamente.\n";
 }
-
-// Funcion principal
+void mostrarMenu() {
+    cout << "\n    Menu opciones   \n" << endl;
+    cout << "1. Agregar un nuevo producto\n";
+    cout << "2. Mostrar todos los productos activos\n";
+    cout << "3. Mostrar productos por categoria\n";
+    cout << "4. Buscar un producto por codigo\n";
+    cout << "5. Modificar un producto\n";
+    cout << "6. Eliminar un producto (borrado logico)\n";
+    cout << "7. Recuperar un producto borrado\n";
+    cout << "8. Guardar datos en archivo binario\n";
+    cout << "9. Cargar datos desde archivo binario\n";
+    cout << "10. Salir\n";
+    cout << "\n" << "------------------------" << endl;
+    cout << "\nSeleccione una opcion: ";
+}
 int main() {
     string nombreArchivo = "inventario.bin";
     int opcion;
 
     do {
-        limpiarPantalla();
         mostrarMenu();
         cin >> opcion;
 
